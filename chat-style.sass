@@ -5,18 +5,19 @@
 	transform: translate(-50%, -50%)
 
 .--dark-theme
-	--chat-background: rgba(10, 14, 14, 0.95)
-	--chat-panel-background: #131719
-	--chat-bubble-background: rgba(20, 24, 26, 0.8) /* Adjusted transparency */
-	--chat-bubble-active-background: rgba(23, 26, 27, 0.8) /* Adjusted transparency */
-	--chat-add-button-background: #212324
+	--chat-background: rgba(10, 14, 14, 0.25) /* Adjusted transparency for container box */
+	--chat-panel-background: rgba(19, 23, 25, 0.6) /* Adjusted transparency for input bar */
+	--chat-bubble-background: rgba(20, 24, 26, 0.4) /* Adjusted transparency for text blobs */
+	--chat-bubble-active-background: rgba(23, 26, 27, 0.4) /* Adjusted transparency for text blobs */
+	--chat-add-button-background: rgba(33, 35, 36, 0.6) /* Adjusted transparency for + button */
 	--chat-send-button-background: #8147fc
-	--chat-text-color: rgba(163, 163, 163, 0.8) /* Adjusted transparency */
+	--chat-text-color: rgba(163, 163, 163, 0.8)
 	--chat-options-svg: #a3a3a3
-	--email-text-color: #cccccc /* Grey color for the email */
+	--email-text-color: #bbbbbb /* Lighter grey color for the email */
+	--icon-color: #8147fc /* Purple color for the icon */
 
 body
-	background: rgba(255, 255, 255, 0.25) /* Adjusted transparency */
+	background: none /* Remove any custom background */
 
 #chat
 	background: var(--chat-background)
@@ -34,15 +35,14 @@ body
 		left: 0
 		width: 100%
 		height: 100%
-		background: rgba(10, 14, 14, 0.25) /* Adjusted transparency */
+		background: rgba(10, 14, 14, 0.25) /* Adjusted transparency for container box */
 		z-index: -1
 
 .btn-icon
 	position: relative
 	cursor: pointer
 	svg
-		stroke: #FFF
-		fill: #FFF
+		stroke: var(--icon-color) /* Purple color for icons */
 		width: 50%
 		height: auto
 		@include centered
@@ -83,7 +83,7 @@ body
 			margin: 0 0 0 0
 			&__email
 				font-size: 10px
-				color: var(--email-text-color) /* Grey color for the email */
+				color: var(--email-text-color) /* Lighter grey color for the email */
 				margin-bottom: 0.3em
 				display: block
 		&__message__context
@@ -104,8 +104,7 @@ body
 				outline: none
 			.emoji-button
 				svg
-					stroke: var(--chat-options-svg)
-					fill: transparent
+					stroke: var(--icon-color) /* Purple color for icons */
 					width: 100%
 			.more-button
 				svg
@@ -118,7 +117,7 @@ body
 				width: fit-content
 				display: inline-table
 				word-wrap: break-word
-				background: var(--chat-bubble-background) /* Adjusted transparency */
+				background: var(--chat-bubble-background) /* Adjusted transparency for text blobs */
 				font-size: 13px
 				color: var(--chat-text-color)
 				padding: .5em .8em
@@ -128,10 +127,10 @@ body
 				&:not(:last-child)
 					margin: 0 0 .3em
 				&:active
-					background: var(--chat-bubble-active-background) /* Adjusted transparency */
+					background: var(--chat-bubble-active-background) /* Adjusted transparency for text blobs */
 
 	&__conversation-panel
-		background: var(--chat-panel-background)
+		background: var(--chat-panel-background) /* Adjusted transparency for input bar */
 		border-radius: 12px
 		padding: 0 1em
 		height: 55px
@@ -155,11 +154,11 @@ body
 			height: 23px
 			min-width: 23px
 			width: 23px
-			background: var(--chat-add-button-background)
+			background: var(--chat-add-button-background) /* Adjusted transparency for + button */
 			border-radius: 50%
 			svg
 				width: 70%
-				stroke: #54575c
+				stroke: var(--icon-color) /* Purple color for icons */
 		.emoji-button
 			min-width: 23px
 			width: 23px
@@ -169,7 +168,7 @@ body
 			svg
 				width: 100%
 				fill: transparent
-				stroke: #54575c
+				stroke: var(--icon-color) /* Purple color for icons */
 		.send-message-button
 			background: var(--chat-send-button-background)
 			height: 30px
@@ -180,6 +179,8 @@ body
 				transform: scale(.97)
 			svg
 				margin: 1px -1px
+				stroke: #FFF /* Keep the stroke color white for visibility */
+				fill: none
 		&__input
 			width: 100%
 			height: 100%
