@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S3 File Upload</title>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js"></script>
+  <script>
+    // Configure AWS
+    AWS.config.update({
+      accessKeyId: 'YOUR_ACCESS_KEY_ID', // Replace with your actual access key ID
+      secretAccessKey: 'YOUR_SECRET_ACCESS_KEY', // Replace with your actual secret access key
+      region: 'YOUR_AWS_REGION' // Replace with your actual AWS region
+    });
+
+    const s3 = new AWS.S3();
+
+    function uploadFile() {
+      const fileInput = document.getElementById('fileUpload');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert('Please select a file to upload.');
+        return;
+      }
+
+      const params = {
+        Bucket: 'YOUR_S3_BUCKET_NAME', // Replace with your S3 bucket name
+        Key: file.name,
+        Body: file,
+        ACL: 'public-read' // Make the file publicly accessible
+      };
+
+      s3.upload(params, function(err, data) {
+        if (err) {
+          console.error('Error uploading file:', err);
+          alert('There was an error uploading your file. See console for details.');
+          return;
+        }
+        
+        const fileUrl = data.Location;
+        addMessageToChat(fileUrl);
+      });
+    }
+
+    function addMessageToChat(message) {
+      const chatDiv = document.getElementById('chat');
+      const messageElement = document.createElement('div');
+      messageElement.innerHTML = `<a href="${message}" target="_blank">${message}</a>`;
+      chatDiv.appendChild(messageElement);
+    }
+  </script>
+</head>
+<body>
+  <input type="file" id="fileUpload" />
+  <button onclick="uploadFile()">Upload File</button>
+  <div id="chat"></div>
+</body>
+</html>
