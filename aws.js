@@ -1,77 +1,64 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import multer from 'multer';
-import AWS from 'aws-sdk';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import fs from 'fs';
+import path from 'path';
+
+// Load environment variables from .env file
+require('dotenv').config();
 
 const app = express();
-const upload = multer({ storage: multer.memoryStorage() });
+const port = 3000;
 
-// Configure AWS
-AWS.config.update({
+// Configure AWS SDK v3 client
+const s3Client = new S3Client({
   credentials: {
-    // Your AWS credentials here
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
   },
-  region: 'your-region' // e.g., 'us-west-2'
+  region: process.env.AWS_REGION,
+  // Include custom endpoint if necessary
+  endpoint: process.env.AWS_ENDPOINT // Optional: Specify custom endpoint here
 });
 
-const s3 = new AWS.S3();
+// Set up multer for file uploads
+const uploadchat = multer({ dest: 'uploads/' });
 
-app.post('/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
-  }
+// Endpoint to upload a file
+app.post('/upload', uploadchat.single('file'), async (req: Request, res: Response) => {
+  const fileContent = fs.readFileSync(req.file.path);
 
   const params = {
-    Bucket: 'your-bucket-name',
+    Bucket: process.env.AWS_BUCKET_NAME!,
     Key: req.file.originalname,
-    Body: req.file.buffer
+    Body: fileContent,
+    ACL: 'public-read'
   };
 
-  s3.upload(params, (err, data) => {
-    if (err) {
-      console.error('Error uploading file:', err);
-      return res.status(500).send('Error uploading file');
-    }
-    
-    const fileUrl = data.Location;
-    res.json({ url: fileUrl });
-  });
-});
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
-
-
-
-// <!--  -->
-
-
-document.getElementById('sendButton').addEventListener('click', async () => {
-  const fileInput = document.getElementById('fileInput');
-  const file = fileInput.files[0];
-  
-  if (!file) {
-    alert('Please select a file first.');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('file', file);
-
   try {
-    const response = await fetch('/upload', {
-      method: 'POST',
-      body: formData
+    const command = new PutObjectCommand(params);
+    const data = await s3Client.send(command);
+
+    // Delete the file from the local uploads directory
+    fs.unlinkSync(req.file.path);
+
+    // Return the file URL in the response
+    res.status(200).json({
+      message: 'File uploaded successfully',
+      url: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${req.file.originalname}`,
+      data
     });
-
-    if (!response.ok) {
-      throw new Error('Upload failed');
-    }
-
-    const data = await response.json();
-    console.log('File uploaded successfully. URL:', data.url);
-    // Do something with the URL here
-  } catch (error) {
-    console.error('Error uploading file:', error);
+  } catch (err) {
+    console.error('Error uploading file:', err);
+    res.status(500).json({ error: err.message });
   }
+});
+
+// Custom endpoint example
+app.get('/custom', (req: Request, res: Response) => {
+  res.send('Hello from custom endpoint!');
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
