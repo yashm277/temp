@@ -1,64 +1,62 @@
-import express, { Request, Response } from 'express';
-import multer from 'multer';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import fs from 'fs';
-import path from 'path';
+import pool from './db';
 
-// Load environment variables from .env file
-require('dotenv').config();
+interface ChatMessage {
+  name: string;
+  playerEmail: string;
+  timestamp: Date;
+  message: string;
+}
 
-const app = express();
-const port = 3000;
+async function insertChatMessage(eventId: string, message: ChatMessage): Promise<void> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
 
-// Configure AWS SDK v3 client
-const s3Client = new S3Client({
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
-  },
-  region: process.env.AWS_REGION,
-  // Include custom endpoint if necessary
-  endpoint: process.env.AWS_ENDPOINT // Optional: Specify custom endpoint here
-});
+    const query = `
+      UPDATE chats
+      SET messages = messages || $1::jsonb
+      WHERE eventid = $2
+    `;
 
-// Set up multer for file uploads
-const uploadchat = multer({ dest: 'uploads/' });
+    await client.query(query, [JSON.stringify(message), eventId]);
 
-// Endpoint to upload a file
-app.post('/upload', uploadchat.single('file'), async (req: Request, res: Response) => {
-  const fileContent = fs.readFileSync(req.file.path);
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
 
-  const params = {
-    Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: req.file.originalname,
-    Body: fileContent,
-    ACL: 'public-read'
+// -------
+
+import { insertChatMessage } from './chatDb';
+
+// Example usage in your chat application
+app.post('/send-message', async (req, res) => {
+  const { eventId, name, playerEmail, message } = req.body;
+
+  const chatMessage: ChatMessage = {
+    name,
+    playerEmail,
+    timestamp: new Date(),
+    message,
   };
 
   try {
-    const command = new PutObjectCommand(params);
-    const data = await s3Client.send(command);
-
-    // Delete the file from the local uploads directory
-    fs.unlinkSync(req.file.path);
-
-    // Return the file URL in the response
-    res.status(200).json({
-      message: 'File uploaded successfully',
-      url: `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${req.file.originalname}`,
-      data
-    });
-  } catch (err) {
-    console.error('Error uploading file:', err);
-    res.status(500).json({ error: err.message });
+    await insertChatMessage(eventId, chatMessage);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error inserting chat message:', error);
+    res.status(500).json({ success: false, error: 'Failed to insert message' });
   }
 });
 
-// Custom endpoint example
-app.get('/custom', (req: Request, res: Response) => {
-  res.send('Hello from custom endpoint!');
-});
+// ------
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+async function getChatMessages(eventId: string): Promise<ChatMessage[]> {
+  const query = 'SELECT messages FROM chats WHERE eventid = $1';
+  const result = await pool.query(query, [eventId]);
+  return result.rows[0]?.messages || [];
+}
