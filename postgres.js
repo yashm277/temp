@@ -1,21 +1,27 @@
-async function updateMessageTable(playerEmail, message, sessionId, eventId) {
-    const newMessage = {
-        playerEmail: playerEmail,
-        message: message,
-        sessionId: sessionId,
-        timestamp: new Date().toISOString(),
-    };
-
+async function getMessagesByEventId(eventId) {
     const query = `
-        UPDATE your_table_name
-        SET messages = messages || $1::jsonb
-        WHERE eventid = $2
+        SELECT messages
+        FROM your_table_name
+        WHERE eventid = $1
     `;
 
     try {
-        await pool.query(query, [JSON.stringify([newMessage]), eventId]);
-        console.log('Message added successfully!');
+        const res = await pool.query(query, [eventId]);
+        if (res.rows.length === 0) {
+            throw new Error('Event ID not found');
+        }
+        return res.rows[0].messages;
     } catch (err) {
-        console.error('Error updating messages:', err);
+        console.error('Error retrieving messages:', err);
+        throw err;
     }
 }
+
+// Example usage
+getMessagesByEventId('event123')
+    .then(messages => {
+        console.log('Retrieved messages:', messages);
+    })
+    .catch(err => {
+        console.error('Error:', err);
+    });
