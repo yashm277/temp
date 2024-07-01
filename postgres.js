@@ -1,28 +1,41 @@
-async function updateMessageTable(playerEmail, message, sessionId, eventId) {
-    const newMessage = {
-        playerEmail: playerEmail,
-        message: message,
-        sessionId: sessionId,
-        timestamp: new Date().toISOString(),
-    };
+const express = require('express');
+const bodyParser = require('body-parser');
+const { Pool } = require('pg');
+
+
+app.use(bodyParser.json());
+
+// Endpoint to fetch messages
+app.post('/getMessages', async (req, res) => {
+    const { eventId } = req.body;
 
     const query = `
-        INSERT INTO chat (eventid, messages)
-        VALUES ($1, $2::jsonb)
-        ON CONFLICT (eventid)
-        DO UPDATE SET messages = chat.messages || $2::jsonb
+        SELECT jsonb_array_elements(messages) AS message
+        FROM chat
+        WHERE eventid = $1
     `;
 
     try {
-        await pool.query(query, [eventId, JSON.stringify([newMessage])]);
-        console.log('Message added successfully!');
-    } catch (err) {
-        console.error('Error updating messages:', err);
-    }
-}
+        const result = await pool.query(query, [eventId]);
+        const messages = result.rows.map(row => {
+            const messageObj = row.message;
+            const date = new Date(messageObj.timestamp);
+            const formattedTime = date.toISOString().split('T')[1].split('.')[0].slice(0, 5); // Extract HH:MM
+            return [
+                messageObj.message,
+                messageObj.playerEmail,
+                messageObj.sessionId,
+                formattedTime
+            ];
+        });
 
-// Example usage
-updateMessageTable('player@example.com', 'Hello, this is a test message', 'session123', 'event123');
+        res.json({ messages });
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Error fetching messages' });
+    }
+});
+
 
 // ----------
 
