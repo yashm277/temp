@@ -1,48 +1,28 @@
-const express = require('express');
-const { Pool } = require('pg');
-const app = express();
-const port = 3000;
-
-// Create a new pool instance with your connection configuration
-const pool = new Pool({
-    // your connection configuration here
-});
-
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// POST endpoint to get messages by eventId
-app.post('/getMessages', async (req, res) => {
-    const { eventId } = req.body;
-
-    if (!eventId) {
-        return res.status(400).send('Event ID is required');
-    }
+async function updateMessageTable(playerEmail, message, sessionId, eventId) {
+    const newMessage = {
+        playerEmail: playerEmail,
+        message: message,
+        sessionId: sessionId,
+        timestamp: new Date().toISOString(),
+    };
 
     const query = `
-        SELECT messages
-        FROM your_table_name
-        WHERE eventid = $1
+        INSERT INTO chat (eventid, messages)
+        VALUES ($1, $2::jsonb)
+        ON CONFLICT (eventid)
+        DO UPDATE SET messages = chat.messages || $2::jsonb
     `;
 
     try {
-        const result = await pool.query(query, [eventId]);
-        if (result.rows.length === 0) {
-            return res.status(404).send('Event ID not found');
-        }
-        const messages = result.rows[0].messages;
-        res.json({ messages });
+        await pool.query(query, [eventId, JSON.stringify([newMessage])]);
+        console.log('Message added successfully!');
     } catch (err) {
-        console.error('Error retrieving messages:', err);
-        res.status(500).send('Error retrieving messages');
+        console.error('Error updating messages:', err);
     }
-});
+}
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}/`);
-});
-
+// Example usage
+updateMessageTable('player@example.com', 'Hello, this is a test message', 'session123', 'event123');
 
 // ----------
 
