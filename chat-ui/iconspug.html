@@ -1,0 +1,169 @@
+doctype html
+html(lang="en")
+	head
+		meta(charset="UTF-8")
+		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+		title Chatbox Example
+		link(rel="stylesheet" href="styles.css")
+	body
+		button.icon-button.participants-list-button(onclick="toggleParticipantsListBox()")
+			svg#participants-list-icon(xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16")
+				path(d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5")
+			svg#participants-list-cross-icon(xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16" style="display: none;")
+				path(d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z")
+		
+		button.icon-button.chat-box-button(onclick="toggleChatBox()")
+			svg#chat-icon(xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16")
+				path(d="M16 8c0 3.866-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7M5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0m4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2")
+			svg#chat-cross-icon(xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16" style="display: none;")
+				path(d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z")
+		
+		div.box.participants-list-box#participants-list-box
+		div.box.chat-box#chat-box
+		script(src="script.js")
+
+
+
+
+<!-- CSS -->
+
+.icon-button {
+    background-color: black;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: fixed;
+}
+
+.icon-button svg {
+    fill: #8147fc;
+    width: 24px;
+    height: 24px;
+}
+
+.participants-list-button {
+    top: 20px;
+    right: 20px;
+}
+
+.chat-box-button {
+    bottom: 20px;
+    right: 20px;
+}
+
+.box {
+    display: none;
+    position: fixed;
+    width: 300px;
+    height: 400px;
+    background-color: grey;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.participants-list-box {
+    top: 100px;
+    right: 20px;
+}
+
+.chat-box {
+    bottom: 100px;
+    right: 20px;
+}
+
+@keyframes slide-in-bottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-out-bottom {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slide-in-top {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-out-top {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+
+<!-- JS -->
+
+let isChatBoxVisible = false;
+let isParticipantsListBoxVisible = false;
+
+function toggleChatBox() {
+    const chatBox = document.getElementById('chat-box');
+    const chatIcon = document.getElementById('chat-icon');
+    const chatCrossIcon = document.getElementById('chat-cross-icon');
+
+    if (isChatBoxVisible) {
+        chatBox.style.animation = 'slide-out-bottom 0.3s forwards';
+        setTimeout(() => {
+            chatBox.style.display = 'none';
+        }, 300);
+        chatIcon.style.display = 'block';
+        chatCrossIcon.style.display = 'none';
+    } else {
+        chatBox.style.display = 'block';
+        chatBox.style.animation = 'slide-in-bottom 0.3s forwards';
+        chatIcon.style.display = 'none';
+        chatCrossIcon.style.display = 'block';
+    }
+    isChatBoxVisible = !isChatBoxVisible;
+}
+
+function toggleParticipantsListBox() {
+    const participantsListBox = document.getElementById('participants-list-box');
+    const participantsListIcon = document.getElementById('participants-list-icon');
+    const participantsListCrossIcon = document.getElementById('participants-list-cross-icon');
+
+    if (isParticipantsListBoxVisible) {
+        participantsListBox.style.animation = 'slide-out-top 0.3s forwards';
+        setTimeout(() => {
+            participantsListBox.style.display = 'none';
+        }, 300);
+        participantsListIcon.style.display = 'block';
+        participantsListCrossIcon.style.display = 'none';
+    } else {
+        participantsListBox.style.display = 'block';
+        participantsListBox.style.animation = 'slide-in-top 0.3s forwards';
+        participantsListIcon.style.display = 'none';
+        participantsListCrossIcon.style.display = 'block';
+    }
+    isParticipantsListBoxVisible = !isParticipantsListBoxVisible;
+}

@@ -1,0 +1,203 @@
+@mixin centered
+	position: absolute
+	top: 50%
+	left: 50%
+	transform: translate(-50%, -50%)
+
+.--dark-theme
+	--chat-background: rgba(10, 14, 14, 0.25) /* Adjusted transparency for container box */
+	--chat-panel-background: rgba(19, 23, 25, 0.6) /* Adjusted transparency for input bar */
+	--chat-bubble-background: rgba(20, 24, 26, 0.4) /* Adjusted transparency for text blobs */
+	--chat-bubble-active-background: rgba(23, 26, 27, 0.4) /* Adjusted transparency for text blobs */
+	--chat-add-button-background: rgba(33, 35, 36, 0.6) /* Adjusted transparency for + button */
+	--chat-send-button-background: #8147fc
+	--chat-text-color: rgba(163, 163, 163, 0.8)
+	--chat-options-svg: #a3a3a3
+	--email-text-color: #bbbbbb /* Lighter grey color for the email */
+	--icon-color: #8147fc /* Purple color for the icon */
+
+body
+	background: none /* Remove any custom background */
+
+#chat
+	background: var(--chat-background)
+	max-width: 600px
+	margin: 25px auto
+	box-sizing: border-box
+	padding: 1em
+	border-radius: 12px
+	position: relative
+	overflow: hidden
+	&::before
+		content: "" /* Remove the background image */
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
+		background: rgba(10, 14, 14, 0.25) /* Adjusted transparency for container box */
+		z-index: -1
+
+.btn-icon
+	position: relative
+	cursor: pointer
+	svg
+		stroke: var(--icon-color) /* Purple color for icons */
+		width: 50%
+		height: auto
+		@include centered
+
+.chat
+	&__conversation-board
+		padding: 1em 0 2em
+		height: calc(100vh - 55px - 2em - 25px * 2 - .5em - 3em)
+		overflow: auto
+		&__message-container.reversed
+			flex-direction: row-reverse
+			.chat__conversation-board__message__bubble
+				position: relative
+				span
+					&:not(:last-child)
+						margin: 0 0 2em 0
+			.chat__conversation-board__message__person
+				margin: 0 0 0 1.2em
+			.chat__conversation-board__message__options
+				align-self: center
+				position: absolute
+				left: 0
+				display: none
+		&__message-container
+			position: relative
+			display: flex
+			flex-direction: column
+			&:hover
+				.chat__conversation-board__message__options
+					display: flex
+					align-items: center
+				.option-item:not(:last-child)
+					margin: 0 .5em 0 0
+			&:not(:last-child)
+				margin: 0 0 2em 0
+		&__message__person
+			text-align: left
+			margin: 0 0 0 0
+			&__email
+				font-size: 10px
+				color: var(--email-text-color) /* Lighter grey color for the email */
+				margin-bottom: 0.3em
+				display: block
+		&__message__context
+			max-width: 100%
+			align-self: flex-start
+		&__message__options
+			align-self: center
+			position: absolute
+			right: 0
+			display: none
+			.option-item
+				border: 0
+				background: 0
+				padding: 0
+				margin: 0
+				height: 16px
+				width: 16px
+				outline: none
+			.emoji-button
+				svg
+					stroke: var(--icon-color) /* Purple color for icons */
+					width: 100%
+			.more-button
+				svg
+					stroke: var(--chat-options-svg)
+					fill: transparent
+					width: 100%
+		&__message__date
+		&__message__bubble
+			span
+				width: fit-content
+				display: inline-table
+				word-wrap: break-word
+				background: var(--chat-bubble-background) /* Adjusted transparency for text blobs */
+				font-size: 13px
+				color: var(--chat-text-color)
+				padding: .5em .8em
+				line-height: 1.5
+				border-radius: 6px
+				font-family: 'Lato', sans-serif
+				&:not(:last-child)
+					margin: 0 0 .3em
+				&:active
+					background: var(--chat-bubble-active-background) /* Adjusted transparency for text blobs */
+
+	&__conversation-panel
+		background: var(--chat-panel-background) /* Adjusted transparency for input bar */
+		border-radius: 12px
+		padding: 0 1em
+		height: 55px
+		margin: .5em 0 0
+		&__container
+			display: flex
+			flex-direction: row
+			align-items: center
+			height: 100%
+			.panel-item:not(:last-child)
+				margin: 0 1em 0 0
+		&__button
+			background: grey
+			height: 20px
+			width: 30px
+			border: 0
+			padding: 0
+			outline: none
+			cursor: pointer
+		.add-file-button
+			height: 23px
+			min-width: 23px
+			width: 23px
+			background: var(--chat-add-button-background) /* Adjusted transparency for + button */
+			border-radius: 50%
+			svg
+				width: 70%
+				stroke: var(--icon-color) /* Purple color for icons */
+		.emoji-button
+			min-width: 23px
+			width: 23px
+			height: 23px
+			background: transparent
+			border-radius: 50%
+			svg
+				width: 100%
+				fill: transparent
+				stroke: var(--icon-color) /* Purple color for icons */
+		.send-message-button
+			background: var(--chat-send-button-background)
+			height: 30px
+			min-width: 30px
+			border-radius: 50%
+			transition: .3s ease
+			&:active
+				transform: scale(.97)
+			svg
+				margin: 1px -1px
+				stroke: #FFF /* Keep the stroke color white for visibility */
+				fill: none
+		&__input
+			width: 100%
+			height: 100%
+			outline: none
+			position: relative
+			color: var(--chat-text-color)
+			font-size: 13px
+			background: transparent
+			border: 0
+			font-family: 'Lato', sans-serif
+			resize: none
+
+@media only screen and (max-width: 600px)
+	#chat
+		margin: 0
+		border-radius: 0
+		.chat__conversation-board
+			height: calc(100vh - 55px - 2em - .5em - 3em)
+		.chat__conversation-board__message__options
+			display: none !important

@@ -1,0 +1,20 @@
+mixin participantCard(playerName, playerAlias, playerEmail)
+	.participants__card
+		.participants__details
+			span.participants__details__name= playerName
+			span.participants__details__alias= playerAlias
+			span.participants__details__email= playerEmail
+		.participants__icon
+			svg(class="feather feather-mic" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true")
+				path(d="M12 1C9.79 1 8 2.79 8 5V11C8 13.21 9.79 15 12 15C14.21 15 16 13.21 16 11V5C16 2.79 14.21 1 12 1z")
+				path(d="M19 11V9H17V11C17 13.76 14.76 16 12 16C9.24 16 7 13.76 7 11V9H5V11C5 15.14 8.36 18.45 12 18.93V21H9V23H15V21H12V18.93C15.64 18.45 19 15.14 19 11z")
+
+#participants.--dark-theme
+	.participants__header
+		h2 Meeting Participants (6)
+
+	.participants__list
+		+participantCard('John Doe', 'jdoe', 'jdoe@example.com')
+		+participantCard('Jane Smith', 'jsmith', 'jsmith@example.com')
+		+participantCard('Mike Brown', 'mbrown', 'mbrown@example.com')
+
