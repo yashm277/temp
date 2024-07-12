@@ -243,59 +243,6 @@ addText.addEventListener("click", () => {
   textbox.focus();
 });
 
-const addTodo = document.querySelector("#addTodo");
-
-addTodo.addEventListener("click", () => {
-  let todoContainer = document.createElement("div");
-  todoContainer.className = "todo";
-  let todoTitle = document.createElement("div");
-  todoTitle.className = "todo-title";
-  todoTitle.setAttribute("contenteditable", "true");
-  todoTitle.innerHTML = "ToDo List";
-  let listedTask = document.createElement("div");
-  listedTask.className = "listedtask";
-
-  let newTask = document.createElement("input");
-  newTask.className = "newtask";
-  newTask.setAttribute("type", "text");
-  newTask.setAttribute("placeholder", "Enter Task");
-
-  todoContainer.append(todoTitle);
-  todoContainer.append(listedTask);
-  todoContainer.append(newTask);
-
-  newTask.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      addtask();
-    }
-  });
-
-  function addtask() {
-    let listitem = document.createElement("li");
-
-    listitem.className = "list-group-item";
-    listitem.innerHTML = newTask.value;
-
-    listitem.addEventListener("click", () => {
-      listitem.classList.toggle("done");
-    });
-    let deleteitem = document.createElement("i");
-    deleteitem.className = "ri-delete-bin-2-line todo-delete";
-
-    deleteitem.addEventListener("click", () => {
-      listitem.remove();
-    });
-    listitem.append(deleteitem);
-    listedTask.append(listitem);
-
-    newTask.value = "";
-  }
-
-  document.body.appendChild(todoContainer);
-  dragElement(todoContainer);
-  // textbox.focus();
-});
-
 function dragElement(elmnt) {
   var pos1 = 0,
     pos2 = 0,
