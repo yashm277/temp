@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Whiteboard</title>
-    <link rel="shortcut icon" href="whiteboard.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
@@ -13,15 +11,16 @@
     />
   </head>
   <body>
-</div>
-    <canvas class="whiteboard"></canvas>
+    <div class="container">
+      <canvas class="whiteboard" id="whiteboard-id"></canvas>
+    </div>
     <div class="stroke"></div>
     <div class="toolbox" id="mainBox">
       <i class="ri-pencil-line icon" id="pencilOpen"
         ><div class="tooltip">draw</div></i
       >
       <i class="ri-text icon" id="addText"><div class="tooltip">text</div></i>
-      
+
       <i class="ri-moon-line icon" id="theme"
         ><div class="tooltip">theme</div></i
       >
@@ -29,12 +28,14 @@
         ><div class="tooltip">undo</div></i
       >
       <i class="ri-arrow-go-forward-line icon" id="redo"
-      ><div class="tooltip">redo</div></i
-    >
+        ><div class="tooltip">redo</div></i
+      >
       <i class="ri-delete-bin-line icon" id="clear"
         ><div class="tooltip">clear</div></i
       >
-      <i class="ri-download-line icon" id="save"><div class="tooltip">save</div></i>
+      <i class="ri-download-line icon" id="save"
+        ><div class="tooltip">save</div></i
+      >
     </div>
     <div class="toolbox slide-out" id="pencilBox">
       <i class="ri-arrow-down-s-line icon" id="pencilClose"
@@ -42,21 +43,21 @@
       >
       <i
         class="ri-checkbox-blank-circle-fill icon"
-        style="color: black;"
+        style="color: black"
         id="colorPicker"
         ><div class="tooltip">color</div>
         <input oninput="changeColor(this)" type="color" class="color-picker"
       /></i>
-      <i class="ri-pencil-fill red icon" style="color: #e10600;"
+      <i class="ri-pencil-fill red icon" style="color: #e10600"
         ><div class="tooltip">red</div></i
       >
-      <i class="ri-pencil-fill blue icon" style="color: #0827f5;"
+      <i class="ri-pencil-fill blue icon" style="color: #0827f5"
         ><div class="tooltip">blue</div></i
       >
-      <i class="ri-pencil-fill green icon" style="color: #19a15f;"
+      <i class="ri-pencil-fill green icon" style="color: #19a15f"
         ><div class="tooltip">green</div></i
       >
-      <i class="ri-pencil-fill yellow icon" style="color: #ffce43;"
+      <i class="ri-pencil-fill yellow icon" style="color: #ffce43"
         ><div class="tooltip">yellow</div></i
       >
       <i class="ri-separator icon" id="line"><div class="tooltip">line</div></i>

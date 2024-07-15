@@ -221,13 +221,49 @@ document.body.addEventListener("wheel", function (e) {
     stroke.style.visibility = "hidden";
   }, 1000);
 });
+document.addEventListener("DOMContentLoaded", (event) => {
+  const canvas = document.getElementById("whiteboard-id");
+  const toggleButton = document.getElementById("theme");
 
-const theme = document.querySelector("#theme");
+  // Draggable functionality
+  canvas.addEventListener("mousedown", function (e) {
+    let shiftX = e.clientX - canvas.getBoundingClientRect().left;
+    let shiftY = e.clientY - canvas.getBoundingClientRect().top;
 
-theme.addEventListener("click", () => {
-  theme.classList.toggle("ri-sun-line");
-  theme.classList.toggle("ri-moon-line");
-  document.body.classList.toggle("dark");
+    function moveAt(pageX, pageY) {
+      canvas.style.left = pageX - shiftX + "px";
+      canvas.style.top = pageY - shiftY + "px";
+    }
+
+    function onMouseMove(event) {
+      moveAt(event.pageX, event.pageY);
+    }
+
+    document.addEventListener("mousemove", onMouseMove);
+
+    canvas.onmouseup = function () {
+      document.removeEventListener("mousemove", onMouseMove);
+      canvas.onmouseup = null;
+    };
+  });
+
+  canvas.ondragstart = function () {
+    return false;
+  };
+
+  // Toggle background color
+  toggleButton.addEventListener("click", () => {
+    console.log("triggering");
+    togglingCanvas = document.getElementById("whiteboard-id");
+    console.log(togglingCanvas.style.backgroundColor);
+    theme.classList.toggle("ri-sun-line");
+    theme.classList.toggle("ri-moon-line");
+    if (togglingCanvas.style.backgroundColor === "black") {
+      togglingCanvas.style.backgroundColor = "white";
+    } else {
+      togglingCanvas.style.backgroundColor = "black";
+    }
+  });
 });
 
 const addText = document.querySelector("#addText");
@@ -282,14 +318,6 @@ window.onresize = () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 };
-
-document.querySelector(".infoIcon").addEventListener("click", () => {
-  document.querySelector(".info").classList.toggle("info-in");
-});
-
-document.querySelector(".close").addEventListener("click", () => {
-  document.querySelector(".info").classList.toggle("info-in");
-});
 
 let link = document.createElement("a");
 link.download = "whiteboard.png";
